@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meals/Views/meal_details.dart';
+import 'package:meals/views/meal_details.dart';
 import 'package:meals/models/meal.dart';
 import 'package:meals/widgets/meal_item.dart';
 
@@ -21,7 +21,13 @@ class MealsView extends StatelessWidget {
     Widget content = Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [Text('No meals available')],
+        children: [
+          Text('0.o', style: TextStyle(color: Colors.white, fontSize: 18)),
+          Text(
+            'There is nothing to show here.',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ],
       ),
     );
 

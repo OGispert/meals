@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:meals/models/meal.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals/providers/favorites_provider.dart';
 
-class MealDetailsView extends StatelessWidget {
+class MealDetailsView extends ConsumerWidget {
   const MealDetailsView({super.key, required this.meal});
 
   final Meal meal;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(meal.title)),
+      appBar: AppBar(
+        title: Text(meal.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final isFavorite = ref
+                  .read(favoriteMealsProvider.notifier)
+                  .toggleMealFavoriteState(meal);
+            },
+            icon: Icon(Icons.favorite),
+          ),
+        ],
+      ),
       body: ListView(
         children: [
           FadeInImage(
