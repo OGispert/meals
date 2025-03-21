@@ -3,9 +3,10 @@ import 'package:meals/models/meal.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem({super.key, required this.meal});
+  const MealItem({super.key, required this.meal, required this.onMealSelected});
 
   final Meal meal;
+  final void Function() onMealSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class MealItem extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       elevation: 2.0,
       child: InkWell(
-        onTap: () {},
+        onTap: onMealSelected,
         child: Stack(
           children: [
             FadeInImage(
@@ -75,22 +76,5 @@ class MealItem extends StatelessWidget {
         ),
       ),
     );
-
-    // return Card(
-    //   child: Row(
-    //     children: [
-    //       Image.network(meal.imageUrl, width: 120),
-    //       Expanded(
-    //         child: Column(
-    //           children: [
-    //             Text(meal.title),
-    //             Text(meal.affordability.name),
-    //             Text(meal.complexity.name),
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 }
