@@ -1,50 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:meals/Views/tabs.dart';
-// import 'package:meals/widgets/main_drawer.dart';
 import 'package:meals/providers/filters_provider.dart';
 
-class FiltersView extends ConsumerStatefulWidget {
+class FiltersView extends ConsumerWidget {
   const FiltersView({super.key});
 
-  @override
-  ConsumerState<FiltersView> createState() {
-    return _FiltersViewState();
-  }
-}
-
-class _FiltersViewState extends ConsumerState<FiltersView> {
-  var glutenFreeFilterSet = false;
-  var lactoseFreeFilterSet = false;
-  var vegetarianFilterSet = false;
-  var veganFilterSet = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final activeFilters = ref.read(filtersProvider);
-    glutenFreeFilterSet = activeFilters[Filter.glutenFree] ?? false;
-    lactoseFreeFilterSet = activeFilters[Filter.lactoseFree] ?? false;
-    vegetarianFilterSet = activeFilters[Filter.vegetarian] ?? false;
-    veganFilterSet = activeFilters[Filter.vegan] ?? false;
-  }
-
-  Widget toggle(int id, bool value, String title, String subtitle) {
+  Widget toggle(
+    BuildContext context,
+    WidgetRef ref,
+    int id,
+    bool value,
+    String title,
+    String subtitle,
+  ) {
     return SwitchListTile.adaptive(
       value: value,
       onChanged: (isOn) {
-        setState(() {
-          switch (id) {
-            case 1:
-              glutenFreeFilterSet = isOn;
-            case 2:
-              lactoseFreeFilterSet = isOn;
-            case 3:
-              vegetarianFilterSet = isOn;
-            case 4:
-              veganFilterSet = isOn;
-          }
-        });
+        switch (id) {
+          case 1:
+            ref
+                .read(filtersProvider.notifier)
+                .setFilter(Filter.glutenFree, isOn);
+          case 2:
+            ref
+                .read(filtersProvider.notifier)
+                .setFilter(Filter.lactoseFree, isOn);
+          case 3:
+            ref
+                .read(filtersProvider.notifier)
+                .setFilter(Filter.vegetarian, isOn);
+          case 4:
+            ref.read(filtersProvider.notifier).setFilter(Filter.vegan, isOn);
+        }
       },
       title: Text(
         title,
@@ -63,53 +50,47 @@ class _FiltersViewState extends ConsumerState<FiltersView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeFilters = ref.watch(filtersProvider);
+
     return Scaffold(
       appBar: AppBar(title: Text('Filters')),
-      // drawer: MainDrawer(
-      //   onSelectScreen: (identifier) {
-      //     Navigator.of(context).pop();
-      //     if (identifier == 'meals') {
-      //       Navigator.of(context).pushReplacement(
-      //         MaterialPageRoute(builder: (context) => TabsView()),
-      //       );
-      //     }
-      //   },
-      // ),
-      body: PopScope(
-        canPop: true,
-        onPopInvokedWithResult: (didPop, result) {
-          ref.read(filtersProvider.notifier).setAllFilters({
-            Filter.glutenFree: glutenFreeFilterSet,
-            Filter.lactoseFree: lactoseFreeFilterSet,
-            Filter.vegetarian: vegetarianFilterSet,
-            Filter.vegan: veganFilterSet,
-          });
-        },
-        child: Column(
-          children: [
-            SizedBox(height: 18),
-            toggle(
-              1,
-              glutenFreeFilterSet,
-              'Gluten-free',
-              'Only include gluten-free meals.',
-            ),
-            toggle(
-              2,
-              lactoseFreeFilterSet,
-              'Lactose-free',
-              'Only include lactose-free meals.',
-            ),
-            toggle(
-              3,
-              vegetarianFilterSet,
-              'Vegetarian',
-              'Only include vegetarian meals.',
-            ),
-            toggle(4, veganFilterSet, 'Vegan', 'Only include vegan meals.'),
-          ],
-        ),
+      body: Column(
+        children: [
+          SizedBox(height: 18),
+          toggle(
+            context,
+            ref,
+            1,
+            activeFilters[Filter.glutenFree] ?? false,
+            'Gluten-free',
+            'Only include gluten-free meals.',
+          ),
+          toggle(
+            context,
+            ref,
+            2,
+            activeFilters[Filter.lactoseFree] ?? false,
+            'Lactose-free',
+            'Only include lactose-free meals.',
+          ),
+          toggle(
+            context,
+            ref,
+            3,
+            activeFilters[Filter.vegetarian] ?? false,
+            'Vegetarian',
+            'Only include vegetarian meals.',
+          ),
+          toggle(
+            context,
+            ref,
+            4,
+            activeFilters[Filter.vegan] ?? false,
+            'Vegan',
+            'Only include vegan meals.',
+          ),
+        ],
       ),
     );
   }

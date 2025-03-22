@@ -4,40 +4,26 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals/providers/favorites_provider.dart';
 
-class MealDetailsView extends ConsumerStatefulWidget {
+class MealDetailsView extends ConsumerWidget {
   const MealDetailsView({super.key, required this.meal});
 
   final Meal meal;
 
   @override
-  ConsumerState<MealDetailsView> createState() {
-    return _MealDetailsViewState();
-  }
-}
-
-class _MealDetailsViewState extends ConsumerState<MealDetailsView> {
-  @override
-  Widget build(BuildContext context) {
-    bool isFavorite = ref
-        .watch(favoriteMealsProvider.notifier)
-        .isFavorite(widget.meal);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavorite = ref.watch(favoriteMealsProvider).contains(meal);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.meal.title),
+        title: Text(meal.title),
         actions: [
           IconButton(
             onPressed: () {
-              final favoriteState = ref
+              ref
                   .read(favoriteMealsProvider.notifier)
-                  .toggleMealFavoriteState(widget.meal);
-
-              setState(() {
-                isFavorite = favoriteState;
-              });
+                  .toggleMealFavoriteState(meal);
             },
-            icon:
-                isFavorite ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
           ),
         ],
       ),
@@ -45,7 +31,7 @@ class _MealDetailsViewState extends ConsumerState<MealDetailsView> {
         children: [
           FadeInImage(
             placeholder: MemoryImage(kTransparentImage),
-            image: NetworkImage(widget.meal.imageUrl),
+            image: NetworkImage(meal.imageUrl),
             fit: BoxFit.cover,
             height: 200,
             width: double.infinity,
@@ -60,7 +46,7 @@ class _MealDetailsViewState extends ConsumerState<MealDetailsView> {
             ),
           ),
           SizedBox(height: 12),
-          for (final ingredient in widget.meal.ingredients)
+          for (final ingredient in meal.ingredients)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -80,7 +66,7 @@ class _MealDetailsViewState extends ConsumerState<MealDetailsView> {
             ),
           ),
           SizedBox(height: 12),
-          for (final step in widget.meal.steps)
+          for (final step in meal.steps)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Text(

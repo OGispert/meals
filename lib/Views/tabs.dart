@@ -5,7 +5,6 @@ import 'package:meals/views/categories.dart';
 import 'package:meals/views/filters.dart';
 import 'package:meals/views/meals.dart';
 import 'package:meals/widgets/main_drawer.dart';
-import 'package:meals/providers/meals_provider.dart';
 import 'package:meals/providers/favorites_provider.dart';
 import 'package:meals/providers/filters_provider.dart';
 
@@ -46,29 +45,8 @@ class _TabsViewState extends ConsumerState<TabsView> {
   @override
   Widget build(BuildContext context) {
     final targetPlatform = Theme.of(context).platform;
-    final meals = ref.watch(mealsProvider);
     final favoriteMeals = ref.watch(favoriteMealsProvider);
-    final selectedFilters = ref.watch(filtersProvider);
-
-    final availableMeals =
-        meals.where((meal) {
-          if ((selectedFilters[Filter.glutenFree] ?? false) &&
-              !meal.isGlutenFree) {
-            return false;
-          }
-          if ((selectedFilters[Filter.lactoseFree] ?? false) &&
-              !meal.isLactoseFree) {
-            return false;
-          }
-          if ((selectedFilters[Filter.vegetarian] ?? false) &&
-              !meal.isVegetarian) {
-            return false;
-          }
-          if ((selectedFilters[Filter.vegan] ?? false) && !meal.isVegan) {
-            return false;
-          }
-          return true;
-        }).toList();
+    final availableMeals = ref.watch(filteredMealsProvider);
 
     Widget activeTab = switch (selectedTabIndex) {
       0 => CategoriesView(availableMeals: availableMeals),
