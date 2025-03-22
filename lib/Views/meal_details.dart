@@ -4,24 +4,40 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals/providers/favorites_provider.dart';
 
-class MealDetailsView extends ConsumerWidget {
+class MealDetailsView extends ConsumerStatefulWidget {
   const MealDetailsView({super.key, required this.meal});
 
   final Meal meal;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MealDetailsView> createState() {
+    return _MealDetailsViewState();
+  }
+}
+
+class _MealDetailsViewState extends ConsumerState<MealDetailsView> {
+  @override
+  Widget build(BuildContext context) {
+    bool isFavorite = ref
+        .watch(favoriteMealsProvider.notifier)
+        .isFavorite(widget.meal);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(meal.title),
+        title: Text(widget.meal.title),
         actions: [
           IconButton(
             onPressed: () {
-              final isFavorite = ref
+              final favoriteState = ref
                   .read(favoriteMealsProvider.notifier)
-                  .toggleMealFavoriteState(meal);
+                  .toggleMealFavoriteState(widget.meal);
+
+              setState(() {
+                isFavorite = favoriteState;
+              });
             },
-            icon: Icon(Icons.favorite),
+            icon:
+                isFavorite ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
           ),
         ],
       ),
@@ -29,7 +45,7 @@ class MealDetailsView extends ConsumerWidget {
         children: [
           FadeInImage(
             placeholder: MemoryImage(kTransparentImage),
-            image: NetworkImage(meal.imageUrl),
+            image: NetworkImage(widget.meal.imageUrl),
             fit: BoxFit.cover,
             height: 200,
             width: double.infinity,
@@ -44,7 +60,7 @@ class MealDetailsView extends ConsumerWidget {
             ),
           ),
           SizedBox(height: 12),
-          for (final ingredient in meal.ingredients)
+          for (final ingredient in widget.meal.ingredients)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -64,7 +80,7 @@ class MealDetailsView extends ConsumerWidget {
             ),
           ),
           SizedBox(height: 12),
-          for (final step in meal.steps)
+          for (final step in widget.meal.steps)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Text(
