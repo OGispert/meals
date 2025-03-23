@@ -23,18 +23,23 @@ class MealDetailsView extends ConsumerWidget {
                   .read(favoriteMealsProvider.notifier)
                   .toggleMealFavoriteState(meal);
             },
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            icon:  AnimatedSwitcher(duration: Duration(milliseconds: 300), transitionBuilder: (child, animation) {
+              return ScaleTransition(scale: animation, child: child,);
+            }, child: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, key: ValueKey(isFavorite),)),
           ),
         ],
       ),
       body: ListView(
         children: [
-          FadeInImage(
-            placeholder: MemoryImage(kTransparentImage),
-            image: NetworkImage(meal.imageUrl),
-            fit: BoxFit.cover,
-            height: 200,
-            width: double.infinity,
+          Hero(
+            tag: meal.id,
+            child: FadeInImage(
+              placeholder: MemoryImage(kTransparentImage),
+              image: NetworkImage(meal.imageUrl),
+              fit: BoxFit.cover,
+              height: 300,
+              width: double.infinity,
+            ),
           ),
           SizedBox(height: 16),
           Text(
